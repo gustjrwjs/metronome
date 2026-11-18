@@ -1,0 +1,125 @@
+/* 테마 모음. 기본(눈이 편한)은 index.html :root에 있고, 여기서는 html[data-theme=이름]으로 같은 변수를 덮어씀 */
+
+/* 태극 — 한지색 바탕, 먹색 글자, 빨강·파랑은 포인트로만 */
+[data-theme=taeguk] {
+  --bg: #f6f3ec; --text: #1d1d1f; --muted: #8a867d; --accent: #cd2e3a; --beat: #0047a0;
+  --panel-bg: #ffffff; --panel-border: 1px solid rgba(20, 20, 20, .06); --radius: 18px;
+  --panel-shadow: 0 1px 0 rgba(0, 0, 0, .02), 0 12px 28px -14px rgba(20, 20, 40, .22);
+  --btn-bg: #f3f0ea; --btn-border: 1px solid transparent; --btn-shadow: none; --btn-radius: 12px; --btn-text: #1d1d1f;
+  --play-bg: #1d1d1f; --play-border: #1d1d1f; --play-text: #ffffff; --play-shadow: 0 10px 22px -10px rgba(0, 0, 0, .55);
+  --play-run-bg: #cd2e3a; --play-run-text: #ffffff; --play-spacing: .04em;
+  --dot-off: #ebe7df; --dot-on: #0047a0; --dot-accent-on: #cd2e3a; --dot-ring: #cd2e3a;
+  --sel-bg: #1d1d1f; --sel-border: #1d1d1f; --sel-text: #ffffff;
+  --slider: #1d1d1f; --install: #1d1d1f; --num-weight: 300; --num-color: #1d1d1f;
+}
+/* 박 칸 위에 빨강|파랑 가는 띠 */
+[data-theme=taeguk] .beats-panel {
+  background: linear-gradient(90deg, #cd2e3a 50%, #0047a0 50%) top / 100% 3px no-repeat, #ffffff;
+}
+
+/* 블랙/오렌지: 처음 버전 */
+[data-theme=orange] {
+  --bg: #14161a; --text: #e8eaee; --muted: #8a909c; --accent: #ff7a3d; --beat: #4fa3ff;
+  --panel-bg: #1e2127; --panel-border: 1px solid #2c3038; --panel-shadow: none; --radius: 16px;
+  --btn-bg: #2a2e36; --btn-border: 1px solid #2c3038; --btn-shadow: none; --btn-radius: 10px; --btn-text: #e8eaee;
+  --play-bg: #ff7a3d; --play-border: #ff7a3d; --play-text: #1a0d05; --play-shadow: none;
+  --play-run-bg: #2a2e36; --play-run-text: #e8eaee;
+  --dot-off: #3a3f49; --dot-on: #4fa3ff; --dot-accent-on: #ff7a3d; --dot-ring: #ff7a3d;
+  --sel-bg: #3a2a22; --sel-border: #ff7a3d; --sel-text: #e8eaee;
+  --slider: #ff7a3d; --install: #ff7a3d; --num-weight: 700; --num-color: #e8eaee;
+}
+
+/* 흰/초록 — 형광 민트 대신 말차·세이지 톤, 차분한 숲색 포인트 */
+[data-theme=mint] {
+  --bg: radial-gradient(100% 55% at 100% 0%, #dcefe0 0, transparent 60%), linear-gradient(180deg, #f7faf6, #eef4ee);
+  --text: #1f2d24; --muted: #7d8c81; --accent: #2f6b4f; --beat: #86b393;
+  --panel-bg: #ffffff; --panel-border: 1px solid rgba(30, 70, 40, .07); --radius: 20px;
+  --panel-shadow: 0 1px 0 rgba(30, 70, 40, .03), 0 12px 28px -16px rgba(30, 70, 40, .30);
+  --btn-bg: #f1f6f1; --btn-border: 1px solid transparent; --btn-shadow: none; --btn-radius: 14px; --btn-text: #1f2d24;
+  --play-bg: linear-gradient(135deg, #4a9a70 0%, #2f6b4f 100%); --play-border: transparent; --play-text: #fbfdfb;
+  --play-shadow: 0 12px 26px -12px rgba(47, 107, 79, .7), inset 0 1px 0 rgba(255, 255, 255, .25);
+  --play-run-bg: #1f2d24; --play-run-text: #e9f3ec;
+  --dot-off: #e5ede6; --dot-on: #86b393; --dot-accent-on: #2f6b4f; --dot-ring: #2f6b4f;
+  --sel-bg: #e7f1e9; --sel-border: #2f6b4f; --sel-text: #2f6b4f;
+  --slider: #2f6b4f; --install: #2f6b4f; --num-weight: 300;
+}
+[data-theme=mint] .bpm-num {
+  background: linear-gradient(135deg, #4a9a70, #1f4d38);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+/* 4. 럭셔리 블랙/골드: 깊은 검정, 얇은 금색 선, 세리프 숫자 */
+[data-theme=lux] {
+  --bg: radial-gradient(ellipse at 50% -10%, #2b2416 0, transparent 55%), #0b0b0c;
+  --text: #f2ede1; --muted: #8f8778; --accent: #d4af37; --beat: #e9d8a6;
+  --panel-bg: linear-gradient(180deg, #17171a, #101012); --panel-border: 1px solid rgba(212, 175, 55, .28); --radius: 16px;
+  --panel-shadow: 0 14px 34px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(255, 255, 255, .04);
+  --btn-bg: #141416; --btn-border: 1px solid rgba(212, 175, 55, .22); --btn-shadow: none; --btn-radius: 10px; --btn-text: #e9e2cf;
+  --play-bg: linear-gradient(135deg, #f5e6a8 0%, #d4af37 45%, #9c7a24 100%); --play-border: transparent; --play-text: #17130a;
+  --play-shadow: 0 8px 22px rgba(212, 175, 55, .22), inset 0 1px 0 rgba(255, 255, 255, .35); --play-spacing: .14em;
+  --play-run-bg: #1a1a1d; --play-run-text: #d4af37;
+  --dot-off: #222226; --dot-on: #e9d8a6; --dot-ring: #d4af37;
+  --dot-accent-on: linear-gradient(135deg, #f5e6a8, #d4af37 50%, #9c7a24);
+  --sel-bg: rgba(212, 175, 55, .10); --sel-border: #d4af37; --sel-text: #ead07c;
+  --slider: #d4af37; --install: #d4af37;
+  --num-font: "Didot", "Bodoni MT", "Playfair Display", Georgia, serif; --num-weight: 400;
+}
+[data-theme=lux] .bpm-num {
+  background: linear-gradient(180deg, #f8ebb6, #d4af37 55%, #a8842a);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+[data-theme=lux] .label, [data-theme=lux] .hint, [data-theme=lux] .tempo-name { letter-spacing: .06em; }
+[data-theme=lux] .play.running { border-color: rgba(212, 175, 55, .5); }
+
+/* 로즈 블러쉬 — 크림 바탕에 더스티 로즈, 로즈골드 포인트. 부드럽고 따뜻함 */
+[data-theme=rose] {
+  --bg: radial-gradient(110% 60% at 100% 0%, #fbe1e4 0, transparent 60%),
+        radial-gradient(90% 50% at 0% 100%, #fdeee3 0, transparent 60%), #fdf7f4;
+  --text: #4a2f35; --muted: #a8878d; --accent: #d4848f; --beat: #e8b4a6;
+  --panel-bg: rgba(255, 255, 255, .7); --panel-border: 1px solid rgba(255, 255, 255, .9); --radius: 26px;
+  --panel-shadow: 0 10px 30px -12px rgba(212, 132, 143, .35), inset 0 1px 0 #fff; --panel-blur: blur(16px);
+  --btn-bg: #fbeeee; --btn-border: 1px solid transparent; --btn-shadow: none; --btn-radius: 999px; --btn-text: #4a2f35;
+  --play-bg: linear-gradient(135deg, #f2b8b5 0%, #d4848f 55%, #b9737f 100%); --play-border: transparent; --play-text: #fff;
+  --play-shadow: 0 14px 28px -12px rgba(212, 132, 143, .75), inset 0 1px 0 rgba(255, 255, 255, .45);
+  --play-run-bg: #4a2f35; --play-run-text: #fde8ea;
+  --dot-off: radial-gradient(circle at 32% 28%, #ffffff 0 16%, #fbf0ef 40%, #f0dcdc 100%); --dot-shadow: 0 3px 8px rgba(212, 132, 143, .15);
+  --dot-on: radial-gradient(circle at 32% 28%, #ffffff 0 12%, #f6d3c6 34%, #e8b4a6 100%);
+  --dot-accent-on: radial-gradient(circle at 32% 28%, #ffffff 0 12%, #eeb0b6 32%, #c9707e 100%); --dot-ring: #d4848f;
+  --sel-bg: #f8dfe2; --sel-border: #e4a7af; --sel-text: #b45f6d;
+  --slider: #d4848f; --install: #c9707e; --num-weight: 300;
+  --num-grad: linear-gradient(135deg, #e8a09a, #b9737f);
+}
+[data-theme=rose] .bpm-num, [data-theme=lavender] .bpm-num {
+  background: var(--num-grad); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+[data-theme=rose] .seg button, [data-theme=lavender] .seg button { border-radius: 18px; }
+
+/* 라벤더 피치 — 연보라 바탕에 복숭아빛 포인트. 몽환적이고 산뜻함 */
+[data-theme=lavender] {
+  --bg: radial-gradient(110% 60% at 0% 0%, #e9e1ff 0, transparent 60%),
+        radial-gradient(90% 55% at 100% 100%, #ffe6dc 0, transparent 60%), #f9f6ff;
+  --text: #3a2f55; --muted: #9a90b3; --accent: #9b7fe6; --beat: #ffb199;
+  --panel-bg: rgba(255, 255, 255, .6); --panel-border: 1px solid rgba(255, 255, 255, .9); --radius: 26px;
+  --panel-shadow: 0 10px 30px -12px rgba(155, 127, 230, .35), inset 0 1px 0 #fff; --panel-blur: blur(16px);
+  --btn-bg: rgba(255, 255, 255, .75); --btn-border: 1px solid rgba(255, 255, 255, .95); --btn-shadow: 0 2px 10px rgba(155, 127, 230, .10); --btn-radius: 999px; --btn-text: #3a2f55;
+  --play-bg: linear-gradient(120deg, #c4b1ff 0%, #9b7fe6 50%, #ff9f8a 120%); --play-border: transparent; --play-text: #fff;
+  --play-shadow: 0 14px 30px -12px rgba(155, 127, 230, .75), inset 0 1px 0 rgba(255, 255, 255, .5);
+  --play-run-bg: linear-gradient(135deg, #4b3f6b, #3a2f55); --play-run-text: #fff;
+  --dot-off: radial-gradient(circle at 32% 28%, #ffffff 0 16%, #f4f0ff 40%, #e2dbf5 100%); --dot-shadow: 0 3px 8px rgba(155, 127, 230, .15);
+  --dot-on: radial-gradient(circle at 32% 28%, #ffffff 0 12%, #ffd3c7 34%, #ffb199 100%);
+  --dot-accent-on: radial-gradient(circle at 32% 28%, #ffffff 0 12%, #cdbcff 32%, #8b6be0 100%); --dot-ring: #9b7fe6;
+  --sel-bg: rgba(155, 127, 230, .14); --sel-border: rgba(155, 127, 230, .45); --sel-text: #7a5fd6;
+  --slider: #9b7fe6; --install: #8b6be0; --num-weight: 300;
+  --num-grad: linear-gradient(120deg, #9b7fe6, #ff9f8a);
+}
+
+/* 로즈·라벤더 슬라이더: 연한 막대 + 테마색 손잡이 */
+:is([data-theme=rose], [data-theme=lavender]) { --track: rgba(120, 110, 140, .18); --thumb-ring: #ffffff; }
+:is([data-theme=rose], [data-theme=lavender]) input[type=range] { -webkit-appearance: none; appearance: none; background: transparent; }
+:is([data-theme=rose], [data-theme=lavender]) input[type=range]::-webkit-slider-runnable-track { height: 6px; border-radius: 99px; background: var(--track); }
+:is([data-theme=rose], [data-theme=lavender]) input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 22px; height: 22px; margin-top: -8px; border-radius: 50%;
+  background: var(--slider); border: 3px solid var(--thumb-ring); box-shadow: 0 2px 8px rgba(0, 0, 0, .18);
+}
+:is([data-theme=rose], [data-theme=lavender]) input[type=range]::-moz-range-track { height: 6px; border-radius: 99px; background: var(--track); }
+:is([data-theme=rose], [data-theme=lavender]) input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--slider); border: 3px solid var(--thumb-ring); }
