@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f3efe7">
+<title>메트로놈</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root {
+    /* 기본 테마: 눈이 편한(따뜻한 종이색). 다른 테마는 themes.css에서 같은 변수를 덮어씀 */
+    --bg: #f3efe7; --text: #3b3a36; --muted: #8b877d;
+    --accent: #cf7f5c; --beat: #6f8fa6;
+    --panel-bg: #faf7f1; --panel-border: 1px solid rgba(70, 55, 30, .06); --radius: 20px;
+    --panel-shadow: 0 1px 2px rgba(70, 55, 30, .05), 0 8px 20px rgba(70, 55, 30, .06);
+    --btn-bg: #f0eadf; --btn-border: 1px solid transparent; --btn-shadow: none; --btn-radius: 14px; --btn-text: var(--text);
+    --play-bg: #cf7f5c; --play-border: #cf7f5c; --play-text: #fffaf3; --play-shadow: 0 6px 16px rgba(207, 127, 92, .22);
+    --play-run-bg: #3b3a36; --play-run-text: #faf7f1;
+    --dot-off: #e6dfd2; --dot-on: #6f8fa6; --dot-accent-on: #cf7f5c; --dot-ring: #cf7f5c;
+    --sel-bg: #e6ecf0; --sel-border: #9fb3c3; --sel-text: #4f6f86;
+    --slider: #6f8fa6; --install: #cf7f5c;
+    --num-font: inherit; --num-weight: 600; --num-color: var(--text);
+    --gap: clamp(8px, 1.4dvh, 14px);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--bg); background-attachment: fixed; color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif; }
+  /* 한 화면에 맞추기: 화면 높이에 맞춰 줄이고, 프리셋 목록만 안에서 스크롤 (아주 작은 화면이면 전체 스크롤) */
+  body { height: 100dvh; display: flex; justify-content: center; overflow: hidden;
+    padding: max(10px, env(safe-area-inset-top)) 12px max(10px, env(safe-area-inset-bottom)); }
+  main { width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: var(--gap); min-height: 0; overflow-y: auto; scrollbar-width: none; }
+  .panel { background: var(--panel-bg); border: var(--panel-border); box-shadow: var(--panel-shadow); border-radius: var(--radius);
+    padding: clamp(8px, 1.3dvh, 14px) 12px; backdrop-filter: var(--panel-blur, none); -webkit-backdrop-filter: var(--panel-blur, none); }
+  .label { font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+
+  .beats { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .dot { width: min(clamp(30px, 4.6dvh, 44px), var(--dot-fit, 99px)); height: min(clamp(30px, 4.6dvh, 44px), var(--dot-fit, 99px)); flex-shrink: 0; border-radius: 50%; background: var(--dot-off); border: 2px solid transparent;
+    cursor: pointer; transition: transform .06s, background .06s; position: relative; box-shadow: var(--dot-shadow, none); }
+  .dot.accent { border-color: var(--dot-ring); }
+  .dot.mute { opacity: .45; border-style: dashed; border-color: var(--muted); }
+  .dot.on { background: var(--dot-on); transform: scale(1.15); }
+  .dot.on.accent { background: var(--dot-accent-on); }
+  .beat-col { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .beat-col.group-start { margin-left: 6px; }
+  .dot { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
+  .mini { padding: 0; width: min(30px, var(--dot-fit, 30px)); height: 20px; border: 0; background: transparent; box-shadow: none; color: var(--muted); }
+  .mini svg { width: 100%; height: 20px; }
+  .mini.masked { color: var(--accent); }
+  /* 박 리듬 편집 창 */
+  .beat-pop { position: absolute; left: 6px; right: 6px; top: calc(100% - 8px); z-index: 20; padding: 10px 12px 12px;
+    border-radius: var(--radius); background: var(--panel-bg); border: var(--panel-border);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, .22); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+  .beat-pop[hidden] { display: none; }
+  .bp-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 14px; }
+  .bp-head button { padding: 4px 10px; }
+  .beat-pop .seg { margin-bottom: 10px; }
+  .bp-ticks { display: flex; gap: 8px; justify-content: center; margin: 4px 0 12px; flex-wrap: wrap; }
+  .tick { width: 30px; height: 30px; padding: 0; border-radius: 50%; background: var(--dot-off); }
+  .tick.on { background: var(--dot-on); }
+  .tick.on.first { background: var(--dot-accent-on); }
+  .bp-all { width: 100%; font-size: 14px; }
+  .beats-foot { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .hint { flex: 1; font-size: 11px; color: var(--muted); text-align: center; }
+
+  .bpm-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+  .bpm-row .grp { display: flex; gap: 6px; }
+  .bpm-mid { text-align: center; flex: 1; }
+  .bpm-num { font-size: clamp(46px, min(12dvh, 21vw), 120px); font-weight: var(--num-weight); line-height: 1; font-variant-numeric: tabular-nums;
+    font-family: var(--num-font); color: var(--num-color); }
+  .bpm-unit { color: var(--muted); font-size: 11px; }
+  .tempo-name { color: var(--muted); font-size: clamp(12px, 1.7dvh, 15px); }
+  /* 남는 세로 공간은 BPM 칸이 차지 */
+  .bpm-panel { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; gap: clamp(2px, 3dvh - 10px, 24px); }
+  .bpm-panel input[type=range] { height: clamp(28px, 4dvh, 40px); }
+  .row { display: flex; gap: 8px; align-items: center; }
+  input[type=range] { width: 100%; accent-color: var(--slider); height: 28px; margin: 4px 0 0; }
+  button, select { font: inherit; color: var(--btn-text); background: var(--btn-bg); border: var(--btn-border); box-shadow: var(--btn-shadow);
+    border-radius: var(--btn-radius); padding: 9px 10px; cursor: pointer; }
+  button:active { transform: scale(.97); }
+  .step { min-width: 42px; padding: clamp(9px, 1.6dvh, 14px) 4px; font-weight: 600; }
+  select { appearance: none; width: 100%; }
+
+  .play { width: 100%; padding: clamp(10px, 2.2dvh, 20px) 8px; font-size: 20px; font-weight: 700; border-radius: var(--btn-radius);
+    background: var(--play-bg); border: 1px solid var(--play-border); color: var(--play-text); box-shadow: var(--play-shadow); letter-spacing: var(--play-spacing, 0); }
+  .play.running { background: var(--play-run-bg); color: var(--play-run-text); border-color: transparent; }
+  .tap { flex: 1; padding: clamp(9px, 1.8dvh, 16px); font-size: 17px; }
+  .tap-reset { padding: clamp(9px, 1.8dvh, 16px) 14px; color: var(--muted); }
+
+  /* 세분 목록: 가로로 넘김 (4개 반 정도 보여서 더 있다는 게 보이게) */
+  .seg { display: flex; gap: 6px; margin-bottom: var(--gap); overflow-x: auto; scrollbar-width: none;
+    scroll-snap-type: x proximity; padding-bottom: 2px; }
+  .seg::-webkit-scrollbar { display: none; }
+  .seg button { flex: 0 0 calc((100% - 24px) / 4.4); scroll-snap-align: start;
+    display: flex; flex-direction: column; align-items: center; gap: 0; padding: 4px 2px 5px; }
+  .seg button svg { width: 40px; height: clamp(24px, 4dvh, 38px); }
+  .seg button span { font-size: 11px; color: var(--muted); }
+  .seg button.sel { border-color: var(--sel-border); background: var(--sel-bg); color: var(--sel-text); }
+  .seg button.sel span { color: var(--sel-text); font-weight: 600; }
+  .grid4 { display: grid; grid-template-columns: 1fr 1fr 1.15fr 1fr; gap: 6px; }
+  .grid4 select { padding: 9px 6px; font-size: 15px; }
+  .grid4 .label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  select:disabled { opacity: .45; }
+  .swing-row { display: flex; align-items: center; gap: 8px; margin: -4px 0 8px; }
+  .swing-row[hidden] { display: none; }
+  .swing-row span { font-size: 12px; color: var(--muted); white-space: nowrap; min-width: 34px; }
+  .swing-row input { margin: 0; height: 24px; }
+  .vol { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+  .chip { padding: 5px 10px; font-size: 12px; border-radius: 999px; white-space: nowrap; color: var(--muted); }
+  .chip.on { color: var(--sel-text); background: var(--sel-bg); border-color: var(--sel-border); }
+  .vol span { font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+  .install { padding: 4px 9px; font-size: 12px; border-radius: 999px; white-space: nowrap; box-shadow: none;
+    border: 1px solid var(--install); color: var(--install); background: transparent; }
+  .install[hidden] { display: none; }
+
+  /* 테마 선택: 왼쪽 위 동그라미 → 색 동그라미 목록 */
+  .beats-panel { position: relative; }
+  .beats { padding: 0 34px; }
+  .theme-btn { position: absolute; top: 8px; left: 8px; width: 26px; height: 26px; padding: 0; border-radius: 50%;
+    border: 2px solid var(--panel-bg); box-shadow: 0 0 0 1px rgba(127, 127, 127, .35); background: var(--swatch); }
+  .theme-pop { position: absolute; top: 40px; left: 6px; z-index: 10; display: flex; gap: 10px; padding: 10px 12px;
+    border-radius: 999px; background: var(--panel-bg); border: var(--panel-border);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .18); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+  .theme-pop[hidden] { display: none; }
+  .theme-pop button { width: 30px; height: 30px; padding: 0; border-radius: 50%; background: var(--swatch);
+    border: 2px solid rgba(255, 255, 255, .9); box-shadow: 0 0 0 1px rgba(127, 127, 127, .35); }
+  .theme-pop button.sel { box-shadow: 0 0 0 2px var(--panel-bg), 0 0 0 4px var(--accent); }
+  .preset-panel { flex: 0 1 auto; min-height: 66px; max-height: 32dvh; display: flex; flex-direction: column; }
+  .preset-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .preset-head button { padding: 6px 10px; font-size: 13px; }
+  .presets { display: flex; flex-direction: column; gap: 6px; overflow-y: auto; min-height: 0; flex: 1; }
+  .preset { display: flex; gap: 6px; }
+  .preset .load { flex: 1; text-align: left; display: flex; justify-content: space-between; }
+  .preset .load small { color: var(--muted); }
+  .preset .del { padding: 9px 12px; color: var(--muted); }
+  .empty { color: var(--muted); font-size: 13px; text-align: center; padding: 4px; }
+</style>
+<link rel="stylesheet" href="themes.css">
+<script>
+  // 저장된 테마를 그리기 전에 적용 (?theme=이름 으로 미리보기도 가능)
+  (() => {
+    let t = new URLSearchParams(location.search).get('theme');
+    if (!t) { try { t = localStorage.getItem('metronome.theme'); } catch {} }
+    const known = ['taeguk', 'mint', 'lux', 'rose', 'lavender', 'orange'];
+    if (known.includes(t)) document.documentElement.dataset.theme = t;
+  })();
+</script>
+</head>
+<body>
+<main>
+  <section class="panel beats-panel">
+    <button class="theme-btn" id="themeBtn" aria-label="테마 선택" title="테마"></button>
+    <div class="theme-pop" id="themePop" role="radiogroup" aria-label="테마" hidden></div>
+    <div class="beats" id="beats"></div>
+    <div class="beats-foot">
+      <span class="hint">누르면 강·약·무음 · 길게 누르면 박 리듬</span>
+      <button class="install" id="install" hidden>📲 앱 설치</button>
+    </div>
+    <div class="beat-pop" id="beatPop" hidden>
+      <div class="bp-head"><b id="bpTitle">1박 리듬</b><button id="bpClose" aria-label="닫기">✕</button></div>
+      <div class="seg" id="bpSubs" role="radiogroup" aria-label="이 박의 세분"></div>
+      <div class="label" style="text-align:center">소리 낼 음 고르기 (누르면 켜기/끄기)</div>
+      <div class="bp-ticks" id="bpTicks"></div>
+      <button class="bp-all" id="bpAll">모든 박에 똑같이 적용</button>
+    </div>
+  </section>
+
+  <section class="panel bpm-panel">
+    <div class="bpm-row">
+      <div class="grp">
+        <button class="step" data-d="-5">−5</button>
+        <button class="step" data-d="-1">−1</button>
+      </div>
+      <div class="bpm-mid">
+        <div class="bpm-num" id="bpmNum">120</div>
+        <div class="tempo-name"><span class="bpm-unit">BPM · </span><span id="tempoName"></span></div>
+      </div>
+      <div class="grp">
+        <button class="step" data-d="1">+1</button>
+        <button class="step" data-d="5">+5</button>
+      </div>
+    </div>
+    <input type="range" id="bpmRange" min="30" max="300" value="120" aria-label="BPM">
+  </section>
+
+  <button class="play" id="play">▶ 시작</button>
+  <div class="row">
+    <button class="tap" id="tap">탭 템포 <small id="tapInfo" style="color:var(--muted)"></small></button>
+    <button class="tap-reset" id="tapReset" title="탭 초기화 (Esc)">초기화</button>
+  </div>
+
+  <section class="panel">
+    <div class="label" id="subLabel">세분 (한 박을 나눔)</div>
+    <div class="seg" id="sub" role="radiogroup" aria-label="세분"></div>
+    <div class="swing-row" id="swingRow" hidden>
+      <span>스윙</span><input type="range" id="swing" min="50" max="75" step="1" value="67" aria-label="스윙 정도"><span id="swingVal">67%</span>
+    </div>
+    <div class="grid4">
+      <div>
+        <div class="label">박자표</div>
+        <select id="sig"></select>
+      </div>
+      <div>
+        <div class="label">박 묶음</div>
+        <select id="grouping"></select>
+      </div>
+      <div>
+        <div class="label">소리</div>
+        <select id="sound">
+          <option value="click">클릭</option>
+          <option value="wood">우드블록</option>
+          <option value="beep">비프</option>
+          <option value="cowbell">카우벨</option>
+          <option value="hihat">하이햇</option>
+        </select>
+      </div>
+      <div>
+        <div class="label">폴리리듬</div>
+        <select id="poly"></select>
+      </div>
+    </div>
+    <div class="vol"><span>볼륨</span><input type="range" id="vol" min="0" max="100" value="80"><button class="chip" id="accentFirst" aria-pressed="true">첫 박 강조</button></div>
+  </section>
+
+  <section class="panel preset-panel">
+    <div class="preset-head">
+      <div class="label" style="margin:0">프리셋</div>
+      <button id="savePreset">+ 현재 설정 저장</button>
+    </div>
+    <div class="presets" id="presets"></div>
+  </section>
+</main>
+
+<script src="metronome.js"></script>
+<script>
+  // 앱 설치 버튼: 설치 창을 띄울 수 있으면 띄우고, 아니면 지금 브라우저에 맞는 방법을 안내
+  (() => {
+    const btn = document.getElementById('install');
+    const ua = navigator.userAgent;
+    const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+    if (standalone || location.protocol === 'file:') return;
+    const ios = /iphone|ipad|ipod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const android = /android/i.test(ua);
+    const kakao = /KAKAOTALK/i.test(ua);
+    const inApp = kakao || /NAVER|Instagram|FBAN|FBAV|Line\//i.test(ua);
+    let deferred = null;
+    addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferred = e; btn.hidden = false; });
+    addEventListener('appinstalled', () => { btn.hidden = true; deferred = null; });
+    if (ios || android || inApp) btn.hidden = false; // 휴대폰에서는 항상 보이게
+    btn.onclick = async () => {
+      if (deferred) {
+        deferred.prompt();
+        const { outcome } = await deferred.userChoice;
+        if (outcome === 'accepted') btn.hidden = true;
+        deferred = null;
+      } else if (kakao) {
+        // 카톡 안 브라우저 → 기본 브라우저(크롬/사파리)로 열기
+        alert((ios ? 'Safari로 넘어갑니다.' : '인터넷(기본 브라우저)으로 넘어갑니다.') +
+          '\n넘어간 페이지에서 "앱 설치"를 다시 눌러주세요.');
+        location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(location.href);
+      } else if (inApp) {
+        alert('앱 안 브라우저에서는 설치가 안 돼요.\n메뉴(⋮ 또는 …)에서 "다른 브라우저로 열기"를 누른 뒤 다시 눌러주세요.');
+      } else if (ios) {
+        alert(/CriOS|FxiOS|EdgiOS/i.test(ua)
+          ? '아이폰은 사파리에서만 설치돼요.\n이 주소를 사파리로 열고 공유(□↑) → "홈 화면에 추가"를 누르세요.'
+          : '아래쪽 공유 버튼(□↑)을 누른 뒤 "홈 화면에 추가"를 누르세요.');
+      } else if (android) {
+        alert('브라우저 메뉴(⋮)에서 "앱 설치" 또는 "홈 화면에 추가"를 누르세요.\n(이미 설치했다면 홈 화면의 메트로놈 아이콘으로 여세요)');
+      }
+    };
+  })();
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).catch(() => {});
+  }
+</script>
+</body>
+</html>
