@@ -240,7 +240,7 @@
     const btn = document.getElementById('install');
     const ua = navigator.userAgent;
     const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
-    if (standalone || location.protocol === 'file:') return;
+    if (standalone || location.protocol === 'file:' || '__TAURI_INTERNALS__' in window) return; // exe 앱에선 숨김
     const ios = /iphone|ipad|ipod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     const android = /android/i.test(ua);
     const kakao = /KAKAOTALK/i.test(ua);
@@ -271,7 +271,8 @@
       }
     };
   })();
-  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  // exe 앱은 파일이 안에 들어 있고 업데이트는 exe가 따로 받음 → 오프라인 캐시 불필요
+  if ('serviceWorker' in navigator && location.protocol !== 'file:' && !('__TAURI_INTERNALS__' in window)) {
     navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).catch(() => {});
   }
 </script>
