@@ -118,8 +118,9 @@
     '5': { name: '5잇단', offs: () => even(5) },
     '6': { name: '6잇단', offs: () => even(6) },
     '7': { name: '7잇단', offs: () => even(7) },
+    '8': { name: '8잇단', offs: () => even(8) },
   };
-  const SUB_ORDER = ['1', '2', '3', '4', 'swing', 'dotted', '5', '6', '7'];
+  const SUB_ORDER = ['1', '2', '3', '4', 'swing', 'dotted', '5', '6', '7', '8'];
   const tickCount = (sub) => SUBDIVS[sub].offs({ swing: 0.6 }).length;
 
   // ---------- 상태 ----------
